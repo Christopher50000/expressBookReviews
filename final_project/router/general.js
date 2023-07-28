@@ -1,7 +1,7 @@
 const express = require('express');
 let books = require("./booksdb.js"); //The Book Objects from this file 
 let isValid = require("./auth_users.js").isValid; // uses the function to see if the user is valid
-let users = require("./auth_users.js").users; // gets the list of users 
+const users = require("./auth_users.js").users; // gets the list of users 
 const public_users = express.Router(); // creates a Router for users 
 
 // To Register a public user
@@ -14,9 +14,9 @@ public_users.post("/register", (req,res) => {
   // Handle user logic 
   if(username && password)
   {
-  if(!isValid)
+  if(!isValid(req.body.username))
   {
-      users.push(({"username":username,"password":password}));
+      users.push({"username":username,"password":password});
       return res.status(200).json({message: "User successfully registred. Now you can login"});
   }
   else

@@ -7,7 +7,8 @@ let users = [];
 
 // checks to see if the user is valid within the list 
 const isValid = (username)=>{ 
-       return users.includes(username);
+    const userExists = users.some((user) => user.username === username);
+    return userExists
 }
 
 
@@ -50,7 +51,7 @@ regd_users.post("/login", (req,res) => {
             accessToken,username
         }
 
-        return res.status(200).send("User successfully logged in");
+        return res.status(200).send("User successfully logged in" +"Access Token is" + accessToken);
         
   }
 
