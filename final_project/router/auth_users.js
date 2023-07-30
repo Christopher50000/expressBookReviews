@@ -43,7 +43,7 @@ regd_users.post("/login", (req,res) => {
   {
         // basically gives the user an access token 
         let accessToken = jwt.sign({
-        data: password
+        username: password
         }, 'access', { expiresIn: 60 * 60 });
 
         req.session.authorization =
@@ -51,7 +51,10 @@ regd_users.post("/login", (req,res) => {
             accessToken,username
         }
 
-        return res.status(200).send("User successfully logged in" +"Access Token is" + accessToken);
+
+
+        return res.status(200).send("User successfully logged in" +"Access Token is " + accessToken);
+        // Remeber to put this token into post man in order to make it delete 
         
   }
 
@@ -69,19 +72,52 @@ regd_users.post("/login", (req,res) => {
 regd_users.put("/auth/review/:isbn", (req, res) => {
 
   const ISBN=req.params.isbn;
-  const Review=req.body;
+ 
+  const newReview = {
+    username: req.session.authorization['username'],
+    reviewText: req.body,
+  };
+
+
+  
+  
+  console.log(req.session.authorization['username']);
   if(books[ISBN])
   {
-      
-      books[ISBN].review=Review;
+      books[ISBN].reviews[newReview.username]=newReview.reviewText;
       return res.status(200).json({ message: 'Review added successfully.' });
-    } 
+} 
     else {
       return res.status(404).json({ message: 'Book not found.' });
     }
  
 });
 
+
+
+
+
+
+// Adding  a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+
+
+
+  const ISBN=req.params.isbn;
+  
+  if(books[ISBN])
+  {
+      delete books[ISBN].reviews[req.session.authorization['username']];
+      return res.status(200).json({ message: 'The book Review was deleted' });
+      
+    } 
+    else {
+      return res.status(404).json({ message: 'Book not found.' });
+    }
+
+}
+ 
+);
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
